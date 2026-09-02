@@ -23,6 +23,7 @@ function defaultCampaignConfig(name) {
       },
       font: 'cairo-tajawal',
       logoUrl: '',
+      logoWidth: 180,
       pattern: {
         type: 'none', // none | dots | diagonal | grid | arabesque | stars
         color: '#1c2d35',

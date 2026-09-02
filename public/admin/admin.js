@@ -204,6 +204,8 @@ function renderIdentity(){
   $('f-title-ar').value = d.brand.title.ar; $('f-title-en').value = d.brand.title.en;
   $('f-subtitle-ar').value = d.brand.subtitle.ar; $('f-subtitle-en').value = d.brand.subtitle.en;
   $('f-logo').value = d.theme.logoUrl || '';
+  $('f-logoWidth').value = d.theme.logoWidth || 180;
+  $('f-logoWidth-val').textContent = (d.theme.logoWidth || 180) + 'px';
   Object.keys(d.theme.colors).forEach(function(k){
     var el = $('c-'+k); if(el){ el.value = d.theme.colors[k]; $('cx-'+k).textContent = d.theme.colors[k]; }
   });
@@ -223,6 +225,7 @@ function renderIdentity(){
   });
 });
 $('f-logo').addEventListener('input', function(){ Editor.draft.theme.logoUrl = this.value; updateLivePreview(); });
+$('f-logoWidth').addEventListener('input', function(){ Editor.draft.theme.logoWidth = parseInt(this.value,10); $('f-logoWidth-val').textContent = this.value+'px'; updateLivePreview(); });
 $('f-logo-file').addEventListener('change', function(e){
   var file = e.target.files[0]; if(!file) return;
   uploadFile(file, $('logo-up-status')).then(function(url){ if(url){ Editor.draft.theme.logoUrl = url; $('f-logo').value = url; updateLivePreview(); } });
@@ -231,6 +234,7 @@ $('f-logo-file').addEventListener('change', function(e){
   $(pair[0]).addEventListener('input', function(){
     Editor.draft.theme.colors[pair[1]] = this.value;
     $('cx-'+pair[1]).textContent = this.value;
+    renderPresets();
     updateLivePreview();
   });
 });
@@ -248,15 +252,22 @@ $('p-customFile').addEventListener('change', function(e){
   });
 });
 
+function isPresetActive(preset){
+  var c = Editor.draft.theme.colors;
+  return Object.keys(preset.colors).every(function(k){ return c[k] === preset.colors[k]; })
+    && Editor.draft.theme.pattern.type === (preset.pattern.type || 'none');
+}
+
 function renderPresets(){
   var row = $('presetsRow'); row.innerHTML='';
   PRESETS.forEach(function(preset){
-    var el = document.createElement('div'); el.className='preset-swatch';
-    el.innerHTML = '<div class="sw-bar" style="background:linear-gradient(135deg,'+preset.colors.accent+','+preset.colors.win+')"></div><span>'+preset.name+'</span>';
+    var active = isPresetActive(preset);
+    var el = document.createElement('div'); el.className='preset-swatch'+(active?' active':'');
+    el.innerHTML = '<div class="sw-bar" style="background:linear-gradient(135deg,'+preset.colors.accent+','+preset.colors.win+')">'+(active?'<span class="sw-check">✓</span>':'')+'</div><span>'+preset.name+'</span>';
     el.addEventListener('click', function(){
       Object.assign(Editor.draft.theme.colors, preset.colors);
       Object.assign(Editor.draft.theme.pattern, { type:'none', color:Editor.draft.theme.colors.ink, opacity:0.06, scale:1, customUrl:'' }, preset.pattern);
-      renderIdentity(); renderPatternGrid(); updateLivePreview();
+      renderIdentity(); renderPresets(); renderPatternGrid(); updateLivePreview();
     });
     row.appendChild(el);
   });
@@ -281,14 +292,20 @@ function renderFontGrid(){
 
 function renderPatternGrid(){
   var grid = $('patternGrid'); grid.innerHTML='';
+  var colors = Editor.draft.theme.colors;
   PATTERNS.forEach(function(p){
+    var active = Editor.draft.theme.pattern.type===p.v;
     var el = document.createElement('div');
-    el.className = 'pattern-opt' + (Editor.draft.theme.pattern.type===p.v ? ' active':'');
-    el.innerHTML = '<div class="po-swatch"></div><span>'+p.label+'</span>';
+    el.className = 'pattern-opt' + (active ? ' active':'');
+    var previewPattern = p.v === 'custom'
+      ? { type: Editor.draft.theme.pattern.customUrl ? 'custom' : 'none', customUrl: Editor.draft.theme.pattern.customUrl, opacity: 0.35 }
+      : { type: p.v, color: colors.ink, opacity: 0.35 };
+    var bg = p.v === 'none' ? 'none' : patternCss(previewPattern, colors);
+    el.innerHTML = '<div class="po-swatch" style="background-color:'+colors.surface+';background-image:'+bg+';background-size:40px">'+(active?'<span class="sw-check">✓</span>':'')+'</div><span>'+p.label+'</span>';
     el.addEventListener('click', function(){
       Editor.draft.theme.pattern.type = p.v;
       if(p.v !== 'none' && !Editor.draft.theme.pattern.color) Editor.draft.theme.pattern.color = Editor.draft.theme.colors.ink;
-      renderPatternGrid(); updateLivePreview();
+      renderPatternGrid(); renderPresets(); updateLivePreview();
     });
     grid.appendChild(el);
   });
@@ -317,7 +334,8 @@ function updateLivePreview(){
   box.style.backgroundImage = patternCss(d.theme.pattern, d.theme.colors);
   box.style.backgroundSize = (120*(d.theme.pattern.scale||1))+'px';
   box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center'; box.style.flexDirection='column'; box.style.gap='10px'; box.style.padding='20px'; box.style.textAlign='center';
-  var logo = d.theme.logoUrl ? '<img src="'+escapeAttr(d.theme.logoUrl)+'" style="max-width:100px;max-height:60px;margin-bottom:6px">' : '';
+  var logoW = Math.min(d.theme.logoWidth || 180, 200);
+  var logo = d.theme.logoUrl ? '<img src="'+escapeAttr(d.theme.logoUrl)+'" style="width:'+logoW+'px;max-width:70%;height:auto;max-height:110px;object-fit:contain;margin-bottom:6px">' : '';
   box.innerHTML = logo +
     '<div style="font-family:'+f.display+';font-weight:900;font-size:22px;color:'+d.theme.colors.ink+'">'+escapeHtml(d.brand.title.ar)+'</div>'+
     '<div style="font-family:'+f.body+';font-size:13px;color:'+d.theme.colors.ink+'">'+escapeHtml(d.brand.subtitle.ar)+'</div>'+

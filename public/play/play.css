@@ -30,7 +30,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 /* start */
 #screen-start{align-items:center;justify-content:center;text-align:center;gap:22px}
-.start-logo{max-width:180px;max-height:110px;margin:0 auto}
+.start-logo{width:var(--logo-w,180px);max-width:90%;height:auto;max-height:240px;margin:0 auto;object-fit:contain;display:block}
 .start-title{font-family:var(--font-d);font-weight:900;font-size:clamp(26px,6vw,42px);margin:0;text-wrap:balance}
 .start-subtitle{font-size:clamp(14px,3vw,18px);color:var(--ink-soft);margin:0;max-width:460px}
 .start-meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:12.5px;color:var(--ink-soft)}

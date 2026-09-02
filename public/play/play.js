@@ -83,6 +83,8 @@ function applyTheme(config){
   app.style.setProperty('--ink-soft', hexToRgba(colors.ink,.6));
   app.style.setProperty('--accent-ink', pickInk(colors.accent));
 
+  app.style.setProperty('--logo-w', (config.theme.logoWidth || 180) + 'px');
+
   var pattern = config.theme.pattern || { type:'none' };
   app.classList.remove('has-pattern');
   if(pattern.type === 'custom' && pattern.customUrl){
@@ -131,7 +133,7 @@ function loadGame(){
       $('langToggle').hidden = State.config.meta.language !== 'both';
       applyTheme(State.config);
       setLang(lang || 'ar');
-      if(State.config.brand.logoUrl){ $('ps-logo').src = State.config.brand.logoUrl; $('ps-logo').hidden = false; }
+      if(State.config.theme.logoUrl){ $('ps-logo').src = State.config.theme.logoUrl; $('ps-logo').hidden = false; }
       showScreen('screen-start');
     })
     .catch(function(){

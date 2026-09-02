@@ -104,12 +104,16 @@
             </div>
           </div>
           <div class="field">
-            <label>شعار اللعبة</label>
+            <label>شعار اللعبة <span class="size-badge">يفضّل صورة PNG بخلفية شفافة، بحجم حوالي 600×300px أو أي نسبة عرض/ارتفاع تناسب شعارك</span></label>
             <div class="upload-row">
               <input type="text" id="f-logo" placeholder="https://...">
               <span class="file-btn btn btn-ghost btn-sm">رفع<input type="file" id="f-logo-file" accept="image/*"></span>
               <span class="up-status" id="logo-up-status"></span>
             </div>
+          </div>
+          <div class="field">
+            <label>حجم الشعار <span id="f-logoWidth-val"></span></label>
+            <input type="range" id="f-logoWidth" min="60" max="360" step="10">
           </div>
         </div>
 
