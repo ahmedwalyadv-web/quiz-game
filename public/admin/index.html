@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة تحكم لعبة الأسئلة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<section id="view-login" class="view">
+  <div class="pin-card">
+    <div class="pin-logo">🎯</div>
+    <h1>لوحة تحكم لعبة الأسئلة</h1>
+    <p>سجّل دخولك للمتابعة</p>
+    <div class="field"><label>اسم المستخدم</label><input type="text" id="login-user" autocomplete="username"></div>
+    <div class="field"><label>كلمة المرور</label><input type="password" id="login-pass" autocomplete="current-password"></div>
+    <button id="loginBtn" class="btn btn-accent btn-block">دخول</button>
+    <p id="loginError" class="err-text" hidden></p>
+  </div>
+</section>
+
+<section id="view-list" class="view" hidden>
+  <header class="topbar">
+    <div class="topbar-brand"><span class="mark">🎯</span><strong>لعبة الأسئلة</strong></div>
+    <div class="topbar-actions">
+      <button id="changePassBtn" class="btn btn-ghost btn-sm">كلمة المرور</button>
+      <button id="logoutBtn" class="btn btn-ghost btn-sm">تسجيل خروج</button>
+    </div>
+  </header>
+  <main class="page">
+    <div class="page-head-row">
+      <div><h2>الكامبينات</h2><p>كل لعبة (كامبين) ليها رابط لاعبين منفصل خاص بيها، وتقدر تشغّل أكتر من واحدة في نفس الوقت.</p></div>
+      <button id="newCampaignBtn" class="btn btn-accent">+ كامبين جديد</button>
+    </div>
+    <div id="campaignsList" class="campaigns-grid"></div>
+  </main>
+</section>
+
+<section id="view-editor" class="view" hidden>
+  <header class="topbar">
+    <div class="topbar-brand">
+      <button id="backToListBtn" class="btn-icon" title="رجوع">→</button>
+      <strong id="editorCampaignName">الكامبين</strong>
+    </div>
+    <div class="topbar-actions">
+      <a id="playLinkTop" class="link-chip" href="#" target="_blank" rel="noopener">فتح رابط اللاعبين ↗</a>
+      <button id="saveBtn" class="btn btn-accent btn-sm">حفظ التغييرات</button>
+    </div>
+  </header>
+
+  <div class="editor-body">
+    <nav class="editor-tabs">
+      <button data-tab="identity" class="tab-btn active">الهوية والألوان</button>
+      <button data-tab="questions" class="tab-btn">الأسئلة</button>
+      <button data-tab="settings" class="tab-btn">الإعدادات العامة</button>
+      <button data-tab="results" class="tab-btn">النتائج</button>
+    </nav>
+
+    <main class="editor-main">
+      <div id="tab-identity" class="tab-pane active">
+        <div class="panel">
+          <h3>لغة اللعبة</h3>
+          <div class="row">
+            <div class="field"><label>اللغات المتاحة للاعب</label>
+              <select id="f-language">
+                <option value="both">عربي وإنجليزي (زرار تبديل)</option>
+                <option value="ar">عربي فقط</option>
+                <option value="en">إنجليزي فقط</option>
+              </select>
+            </div>
+            <div class="field"><label>اللغة الافتراضية</label>
+              <select id="f-defaultLanguage"><option value="ar">عربي</option><option value="en">English</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>قوالب جاهزة</h3>
+          <p class="hint" style="margin-bottom:12px">اختيار قالب بيغيّر الألوان والنمط بس، وتقدر تعدّل عليه بعد كده براحتك.</p>
+          <div class="presets-row" id="presetsRow"></div>
+        </div>
+
+        <div class="panel">
+          <h3>الاسم والشعار <span class="size-badge">المقاس المثالي: 500×250px، PNG بخلفية شفافة</span></h3>
+          <div class="row">
+            <div class="bi-field"><label>عنوان اللعبة</label>
+              <input type="text" id="f-title-ar" placeholder="العربية" dir="rtl">
+              <input type="text" id="f-title-en" placeholder="English" dir="ltr">
+            </div>
+          </div>
+          <div class="row">
+            <div class="bi-field"><label>وصف مختصر</label>
+              <input type="text" id="f-subtitle-ar" placeholder="العربية" dir="rtl">
+              <input type="text" id="f-subtitle-en" placeholder="English" dir="ltr">
+            </div>
+          </div>
+          <div class="field">
+            <label>شعار اللعبة</label>
+            <div class="upload-row">
+              <input type="text" id="f-logo" placeholder="https://...">
+              <span class="file-btn btn btn-ghost btn-sm">رفع<input type="file" id="f-logo-file" accept="image/*"></span>
+              <span class="up-status" id="logo-up-status"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>الألوان</h3>
+          <div class="color-grid">
+            <div class="color-field"><label>خلفية اللعبة</label><input type="color" id="c-bg"><span id="cx-bg"></span></div>
+            <div class="color-field"><label>لون البطاقات</label><input type="color" id="c-surface"><span id="cx-surface"></span></div>
+            <div class="color-field"><label>لون النص</label><input type="color" id="c-ink"><span id="cx-ink"></span></div>
+            <div class="color-field"><label>اللون المميز</label><input type="color" id="c-accent"><span id="cx-accent"></span></div>
+            <div class="color-field"><label>لون الفوز</label><input type="color" id="c-win"><span id="cx-win"></span></div>
+            <div class="color-field"><label>لون الخسارة</label><input type="color" id="c-lose"><span id="cx-lose"></span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>الخط</h3>
+          <div class="font-grid" id="fontGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h3>نمط الخلفية (Pattern) <span class="size-badge">صورة نمط مخصصة: يفضّل مربّعة وقابلة للتكرار (Tileable)، من 200×200 لغاية 800×800px</span></h3>
+          <div class="pattern-grid" id="patternGrid"></div>
+          <div class="row" style="margin-top:14px">
+            <div class="field"><label>شفافية النمط</label><input type="range" id="p-opacity" min="0.02" max="0.35" step="0.01"></div>
+            <div class="field"><label>حجم النمط</label><input type="range" id="p-scale" min="0.5" max="2.5" step="0.1"></div>
+          </div>
+          <div class="field" id="wrap-patternCustom">
+            <label>صورة نمط مخصصة (اختياري)</label>
+            <div class="upload-row">
+              <input type="text" id="p-customUrl" placeholder="https://...">
+              <span class="file-btn btn btn-ghost btn-sm">رفع<input type="file" id="p-customFile" accept="image/*"></span>
+              <span class="up-status" id="pattern-up-status"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>معاينة حية</h3>
+          <div class="preview-live" id="livePreview"></div>
+        </div>
+      </div>
+
+      <div id="tab-questions" class="tab-pane">
+        <div class="page-head"><h2>الأسئلة</h2><p>كل نص بيتكتب عربي وإنجليزي مع بعض. <span class="size-badge">صورة السؤال: يفضّل 1200×675px (نسبة 16:9)</span></p></div>
+        <div id="questionsList"></div>
+        <button id="addQuestionBtn" class="btn btn-accent btn-block">+ إضافة سؤال جديد</button>
+      </div>
+
+      <div id="tab-settings" class="tab-pane">
+        <div class="page-head"><h2>الإعدادات العامة</h2><p>عدد الأسئلة، التوقيت، وشروط الفوز أو الخسارة.</p></div>
+
+        <div class="panel">
+          <h3>عدد الأسئلة والترتيب</h3>
+          <div class="row">
+            <div class="field"><label>عدد الأسئلة في كل جولة لعب</label><input type="number" id="s-count" min="1"><p class="hint" id="bankHint"></p></div>
+          </div>
+          <div class="check-row"><input type="checkbox" id="s-shuffleQ"><label for="s-shuffleQ">ترتيب عشوائي للأسئلة في كل مرة</label></div>
+          <div class="check-row"><input type="checkbox" id="s-shuffleO"><label for="s-shuffleO">ترتيب عشوائي للاختيارات</label></div>
+          <div class="check-row"><input type="checkbox" id="s-collectName"><label for="s-collectName">إظهار حقل اسم اللاعب (اختياري) في شاشة البداية</label></div>
+        </div>
+
+        <div class="panel">
+          <h3>نظام التوقيت</h3>
+          <div class="seg" id="timeModeSeg">
+            <button data-v="perQuestion">وقت لكل سؤال</button>
+            <button data-v="global">وقت إجمالي للعبة كاملة</button>
+          </div>
+          <div class="row" style="margin-top:16px">
+            <div class="field" id="wrap-defaultTime"><label>الوقت الافتراضي لكل سؤال (ثانية)</label><input type="number" id="s-defaultTime" min="3"></div>
+            <div class="field" id="wrap-globalTime"><label>الوقت الإجمالي للعبة (ثانية)</label><input type="number" id="s-globalTime" min="10"></div>
+          </div>
+          <div class="field"><label>مدة عرض إجابة صح/خطأ قبل الانتقال (ثانية)</label><input type="number" id="s-feedback" min="0.5" step="0.1"></div>
+        </div>
+
+        <div class="panel">
+          <h3>نتيجة اللعبة (فوز أو خسارة)</h3>
+          <div class="field">
+            <label>طريقة تحديد النتيجة</label>
+            <select id="s-winMode">
+              <option value="auto">تلقائي حسب نسبة الإجابات الصحيحة</option>
+              <option value="forceWin">فوز دائمًا لكل اللاعبين</option>
+              <option value="forceLose">خسارة دائمًا لكل اللاعبين</option>
+            </select>
+          </div>
+          <div class="field" id="wrap-passPercent"><label>نسبة النجاح المطلوبة للفوز (%)</label><input type="number" id="s-passPercent" min="0" max="100"></div>
+        </div>
+
+        <div class="panel">
+          <h3>نصوص شاشة النتيجة</h3>
+          <div class="bi-field"><label>عنوان الفوز</label><input type="text" id="m-winTitle-ar" dir="rtl"><input type="text" id="m-winTitle-en" dir="ltr"></div>
+          <div class="bi-field"><label>وصف الفوز</label><input type="text" id="m-winSubtitle-ar" dir="rtl"><input type="text" id="m-winSubtitle-en" dir="ltr"></div>
+          <div class="bi-field"><label>عنوان الخسارة</label><input type="text" id="m-loseTitle-ar" dir="rtl"><input type="text" id="m-loseTitle-en" dir="ltr"></div>
+          <div class="bi-field"><label>وصف الخسارة</label><input type="text" id="m-loseSubtitle-ar" dir="rtl"><input type="text" id="m-loseSubtitle-en" dir="ltr"></div>
+        </div>
+
+        <div class="panel">
+          <h3>حالة الكامبين</h3>
+          <div class="check-row"><input type="checkbox" id="s-active"><label for="s-active">اللعبة مفعّلة (متاحة للاعبين)</label></div>
+        </div>
+      </div>
+
+      <div id="tab-results" class="tab-pane">
+        <div class="page-head-row">
+          <div><h2>النتائج</h2><p>كل من لعب اللعبة كاملة.</p></div>
+          <div style="display:flex;gap:8px">
+            <a id="exportBtn" class="btn btn-ghost btn-sm" href="#" target="_blank">تصدير Excel</a>
+            <button id="clearResultsBtn" class="btn btn-danger btn-sm">تصفير النتائج</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="results-table" id="resultsTable">
+            <thead><tr><th>اللاعب</th><th>الإجابات الصحيحة</th><th>النسبة</th><th>النتيجة</th><th>الوقت</th></tr></thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+          <p id="noResults" class="hint" hidden style="padding:20px;text-align:center">لا توجد نتائج بعد.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <p class="status-line" id="saveStatus"></p>
+</section>
+
+<div id="modal-overlay" class="modal-overlay" hidden>
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

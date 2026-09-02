@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لعبة أسئلة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=Changa:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="play.css">
+</head>
+<body>
+  <div id="app" class="themed">
+    <div class="player-bg-decor" aria-hidden="true"><i></i><i></i></div>
+
+    <div id="screen-loading" class="p-screen center">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loadingText">جارِ تحميل اللعبة...</p>
+    </div>
+
+    <div id="screen-error" class="p-screen center" hidden>
+      <p id="errorText" style="font-weight:800;font-size:18px"></p>
+    </div>
+
+    <div id="screen-start" class="p-screen" hidden>
+      <button id="langToggle" class="lang-toggle" hidden>EN</button>
+      <img id="ps-logo" class="start-logo" hidden>
+      <h1 class="start-title" id="ps-title"></h1>
+      <p class="start-subtitle" id="ps-subtitle"></p>
+      <div class="start-meta" id="ps-meta"></div>
+      <div class="name-field" id="ps-nameWrap"><input type="text" id="ps-name" maxlength="24"></div>
+      <button class="btn-play" id="ps-startBtn"></button>
+    </div>
+
+    <div id="screen-question" class="p-screen" hidden>
+      <div class="q-topbar">
+        <div class="q-progress-row">
+          <span class="q-count" id="pq-count"></span>
+          <span class="q-timer-num" id="pq-timerNum"></span>
+        </div>
+        <div class="timer-bar" id="pq-timerBar"><div class="timer-fill" id="pq-timerFill"></div></div>
+      </div>
+      <div class="q-body">
+        <h2 class="q-text" id="pq-text"></h2>
+        <div class="q-media" id="pq-media" hidden></div>
+        <div class="opts-grid" id="pq-options"></div>
+      </div>
+      <div class="next-wrap"><button class="btn-next" id="pq-nextBtn" hidden></button></div>
+    </div>
+
+    <div id="screen-end" class="p-screen" hidden>
+      <div class="end-wash" id="pe-wash"></div>
+      <div class="end-card" id="pe-card">
+        <div class="end-badge" id="pe-badge"></div>
+        <h2 class="end-title" id="pe-title"></h2>
+        <p class="end-subtitle" id="pe-subtitle"></p>
+        <div class="end-score"><span id="pe-score"></span><small id="pe-scoreTotal"></small></div>
+        <div class="end-percent" id="pe-percent"></div>
+        <div class="end-review" id="pe-review"></div>
+        <div class="end-actions">
+          <button class="btn btn-accent" id="pe-again"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="play.js"></script>
+</body>
+</html>
