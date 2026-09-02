@@ -44,7 +44,10 @@ input[type=text],input[type=password],input[type=number],textarea,select{
 .topbar-brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#e75a3f,#c0392b);display:flex;align-items:center;justify-content:center;font-size:16px}
 .topbar-brand strong{font-family:'Cairo',sans-serif;font-size:15px;color:#fff}
 .topbar-actions{display:flex;gap:8px;align-items:center}
-.link-chip{font-size:12.5px;color:#9fd6ff;border:1px dashed var(--line);padding:8px 12px;border-radius:999px}
+.link-chip{font-size:14px;color:#9fd6ff;border:1px dashed var(--line);padding:8px 12px;border-radius:999px;text-decoration:none}
+.link-bar{display:flex;align-items:center;gap:10px;padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+.link-bar-label{font-size:12.5px;color:var(--text-soft);white-space:nowrap;font-weight:700}
+.link-bar-input{flex:1;background:transparent;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;color:#9fd6ff;font-size:12.5px;font-family:monospace}
 
 .page{max-width:1000px;margin:0 auto;padding:28px 24px 80px}
 .page-head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap}

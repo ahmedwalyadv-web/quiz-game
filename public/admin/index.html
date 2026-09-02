@@ -47,10 +47,15 @@
       <strong id="editorCampaignName">الكامبين</strong>
     </div>
     <div class="topbar-actions">
-      <a id="playLinkTop" class="link-chip" href="#" target="_blank" rel="noopener">فتح رابط اللاعبين ↗</a>
+      <button id="copyLinkTopBtn" class="btn btn-ghost btn-sm" type="button">نسخ رابط اللاعبين</button>
+      <a id="playLinkTop" class="link-chip" href="#" target="_blank" rel="noopener" title="فتح رابط اللاعبين">↗</a>
       <button id="saveBtn" class="btn btn-accent btn-sm">حفظ التغييرات</button>
     </div>
   </header>
+  <div class="link-bar">
+    <span class="link-bar-label">رابط اللاعبين:</span>
+    <input id="playLinkText" class="link-bar-input" type="text" readonly onclick="this.select()">
+  </div>
 
   <div class="editor-body">
     <nav class="editor-tabs">

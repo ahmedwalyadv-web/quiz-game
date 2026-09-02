@@ -294,9 +294,69 @@ function finishGame(){
         var i=document.createElement('i'); i.className=ok?'ok':'no'; i.textContent=ok?'✓':'✗'; rev.appendChild(i);
       });
       $('pe-again').textContent = t('playAgain');
-      $('pe-again').onclick = function(){ showScreen('screen-start'); };
+      $('pe-again').onclick = function(){ clearConfetti(); showScreen('screen-start'); };
+
+      if(res.outcome==='win') fireConfetti();
     });
 }
+
+/* ============ احتفال الفوز (كونفيتي) - Canvas خفيف بدون مكتبات خارجية ============ */
+var confettiParticles = [];
+var confettiAnimId = null;
+
+function fireConfetti(){
+  var canvas = $('confetti-canvas'); if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  var colors = State.config && State.config.theme && State.config.theme.colors
+    ? [State.config.theme.colors.accent, State.config.theme.colors.win, '#ffffff', State.config.theme.colors.lose]
+    : ['#e75a3f', '#1f9d55', '#ffffff', '#b93a3a'];
+  confettiParticles = [];
+  for(var i=0;i<160;i++){
+    confettiParticles.push({
+      x: canvas.width/2 + (Math.random()-0.5)*140,
+      y: canvas.height*0.3 + (Math.random()-0.5)*60,
+      vx: (Math.random()-0.5)*14,
+      vy: -Math.random()*15-5,
+      size: Math.random()*7+4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rotation: Math.random()*360,
+      rotSpeed: (Math.random()-0.5)*12,
+      shape: Math.random()>0.5 ? 'rect' : 'circle'
+    });
+  }
+  var gravity = 0.35;
+  var start = performance.now();
+  function frame(now){
+    var elapsed = now - start;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    var alive = false;
+    confettiParticles.forEach(function(p){
+      p.vy += gravity; p.x += p.vx; p.y += p.vy; p.rotation += p.rotSpeed;
+      if(p.y < canvas.height+20) alive = true;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate((p.rotation*Math.PI)/180); ctx.fillStyle = p.color;
+      if(p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+      else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+    });
+    if(alive && elapsed<6000) confettiAnimId = requestAnimationFrame(frame);
+  }
+  confettiAnimId = requestAnimationFrame(frame);
+}
+
+function clearConfetti(){
+  if(confettiAnimId) cancelAnimationFrame(confettiAnimId);
+  confettiAnimId = null;
+  var canvas = $('confetti-canvas'); if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confettiParticles = [];
+}
+
+window.addEventListener('resize', function(){
+  var canvas = $('confetti-canvas'); if(!canvas) return;
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+});
 
 loadGame();
 })();

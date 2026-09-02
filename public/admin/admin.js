@@ -40,6 +40,28 @@ function uid(){ return 'q'+Math.random().toString(36).slice(2,9); }
 function clampNum(v,min,max,fallback){ v=Number(v); if(isNaN(v)) return fallback; if(min!=null&&v<min)v=min; if(max!=null&&v>max)v=max; return v; }
 function playLink(slug){ return location.origin + '/play/' + slug; }
 
+function copyToClipboard(text, btnEl){
+  function done(ok){
+    if(!btnEl) return;
+    var original = btnEl.dataset.origLabel || btnEl.textContent;
+    btnEl.dataset.origLabel = original;
+    btnEl.textContent = ok ? 'تم النسخ ✓' : 'تعذر النسخ';
+    setTimeout(function(){ btnEl.textContent = original; }, 1600);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+  } else {
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      done(ok);
+    } catch(e){ done(false); }
+  }
+}
+
 function showView(name){
   ['login','list','editor'].forEach(function(v){ $('view-'+v).hidden = (v!==name); });
 }
@@ -101,11 +123,13 @@ function loadCampaignsList(){
         '<div class="meta" style="word-break:break-all">'+escapeHtml(playLink(c.slug))+'</div>'+
         '<div class="row-btns">'+
           '<button class="btn btn-accent btn-sm" data-act="edit">تعديل</button>'+
+          '<button class="btn btn-ghost btn-sm" data-act="copylink">نسخ الرابط</button>'+
           '<a class="btn btn-ghost btn-sm" href="'+escapeAttr(playLink(c.slug))+'" target="_blank" rel="noopener">معاينة</a>'+
-          '<button class="btn btn-ghost btn-sm" data-act="dup">نسخ</button>'+
+          '<button class="btn btn-ghost btn-sm" data-act="dup">نسخ الكامبين</button>'+
           '<button class="btn btn-danger btn-sm" data-act="del">حذف</button>'+
         '</div>';
       card.querySelector('[data-act=edit]').addEventListener('click', function(){ openEditor(c.id); });
+      card.querySelector('[data-act=copylink]').addEventListener('click', function(e){ copyToClipboard(playLink(c.slug), e.currentTarget); });
       card.querySelector('[data-act=dup]').addEventListener('click', function(){ api('POST','/api/campaigns/'+c.id+'/duplicate').then(loadCampaignsList); });
       card.querySelector('[data-act=del]').addEventListener('click', function(){
         showModal('<h3>حذف "'+escapeHtml(c.name)+'"؟</h3><p class="hint">هيتم حذف كل نتائجها كمان، ومينفعش يترجع.</p>'+
@@ -134,6 +158,7 @@ $('newCampaignBtn').addEventListener('click', function(){
     });
 });
 $('backToListBtn').addEventListener('click', function(){ showView('list'); loadCampaignsList(); });
+$('copyLinkTopBtn').addEventListener('click', function(e){ copyToClipboard($('playLinkText').value, e.currentTarget); });
 
 /* ---------------- editor ---------------- */
 var Editor = { id:null, slug:null, draft:null, active:true };
@@ -143,6 +168,7 @@ function openEditor(id){
     Editor.id = id; Editor.slug = data.slug; Editor.draft = data.config; Editor.active = data.isActive;
     $('editorCampaignName').textContent = data.name;
     $('playLinkTop').href = playLink(data.slug);
+    $('playLinkText').value = playLink(data.slug);
     showView('editor');
     document.querySelectorAll('.tab-btn').forEach(function(b,i){ b.classList.toggle('active', i===0); });
     document.querySelectorAll('.tab-pane').forEach(function(p,i){ p.classList.toggle('active', i===0); });
