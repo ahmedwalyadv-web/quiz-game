@@ -391,6 +391,17 @@ function moveQuestion(idx, dir){
   var arr = Editor.draft.questions; var t=arr[idx]; arr[idx]=arr[j]; arr[j]=t;
   renderQuestions();
 }
+function optionCountOptionsHTML(current){
+  var html='';
+  for(var n=2;n<=6;n++){ html += '<option value="'+n+'"'+(current===n?' selected':'')+'>'+n+'</option>'; }
+  return html;
+}
+function setOptionCount(q, count){
+  count = clampNum(count,2,6,q.options.length);
+  while(q.options.length < count){ q.options.push({text:{ar:'',en:''},correct:false}); }
+  while(q.options.length > count){ q.options.pop(); }
+  if(!q.options.some(function(o){return o.correct;})) q.options[0].correct = true;
+}
 function questionBodyHTML(q){
   var mediaShow = q.mediaType!=='none';
   var mediaPreview = '';
@@ -419,7 +430,12 @@ function questionBodyHTML(q){
       '<div data-media-preview>'+mediaPreview+'</div>'+
       '<p class="hint">فيديو يوتيوب: الصق رابط المشاركة مباشرة.</p>'+
     '</div>'+
-    '<div class="field"><label>الاختيارات (فعّل الدائرة بجانب الاختيار الصحيح)</label><div data-options></div>'+
+    '<div class="field"><label>الاختيارات (فعّل الدائرة بجانب الاختيار الصحيح)</label>'+
+      '<div class="row" style="align-items:center;gap:10px;margin:2px 0 8px">'+
+        '<label style="margin:0;white-space:nowrap">عدد الاختيارات</label>'+
+        '<select data-f="optionCount">'+optionCountOptionsHTML(q.options.length)+'</select>'+
+      '</div>'+
+      '<div data-options></div>'+
       '<button class="btn btn-ghost btn-sm" data-add-opt style="margin-top:6px">+ إضافة اختيار</button>'+
     '</div>'+
     '<div class="q-card-foot"><button class="btn btn-danger btn-sm" data-del-q>حذف هذا السؤال</button></div>';
@@ -443,10 +459,17 @@ function wireQuestionBody(body, q, idx, headEl){
   body.querySelector('[data-del-q]').addEventListener('click', function(){
     if(confirm('حذف هذا السؤال نهائيًا؟')){ Editor.draft.questions.splice(idx,1); renderQuestions(); }
   });
+  var optCountSel = body.querySelector('[data-f="optionCount"]');
+  optCountSel.addEventListener('change', function(){
+    setOptionCount(q, this.value);
+    this.value = q.options.length;
+    renderOptions(body, q);
+  });
   body.querySelector('[data-add-opt]').addEventListener('click', function(){
     if(q.options.length>=6) return;
     q.options.push({text:{ar:'',en:''},correct:false});
-    renderQuestions();
+    optCountSel.value = q.options.length;
+    renderOptions(body, q);
   });
   renderOptions(body, q);
 }
@@ -472,7 +495,9 @@ function renderOptions(body, q){
       row.children[3].addEventListener('click', function(){
         q.options.splice(i,1);
         if(!q.options.some(function(o){return o.correct;})) q.options[0].correct=true;
-        renderQuestions();
+        var sel = body.querySelector('[data-f="optionCount"]');
+        if(sel) sel.value = q.options.length;
+        renderOptions(body, q);
       });
     }
     box.appendChild(row);
